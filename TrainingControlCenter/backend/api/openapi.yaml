@@ -1,0 +1,806 @@
+#
+# Preliminary API, includes login only right now 
+#
+
+openapi: '3.0.3'
+
+info:
+  description: Training Control Center Backend
+  version: 0.1.0
+  title: Training Control Center Backend
+
+servers:
+  - url: http://localhost:3010/v0
+
+paths:
+  /register:
+    post:
+      description: Register
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        200:
+          description: Registration successful, return credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credentials'
+        401:
+          description: Username taken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /login:
+    post:
+      description: Login
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        200:
+          description: Login successful, return user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Credentials invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /token:
+    post:
+      description: Add or update user's strave token
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      - name: token
+        in: query
+        description: New token
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Token updated
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Username not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      description: Get user's token
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Token returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Error getting token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /favorites:
+    post:
+      description: Update favorite sports
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      - name: add_favorites
+        in: query
+        description: New favorite sports
+        required: false
+        schema:
+          $ref: '#/components/schemas/Favorites'
+      - name: delete_favorites
+        in: query
+        description: Favorite sports to remove
+        required: false
+        schema:
+          $ref: '#/components/schemas/Favorites'
+      responses:
+        200:
+          description: New favorite saved
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error saving favorite
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      description: Get all user's favorites
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Favorites returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorites'
+        401:
+          description: Error getting favorites
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /goals:
+    post:
+      description: New goal
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Goal'
+      responses:
+        200:
+          description: New goal saved
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error saving goal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      description: Get goals
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Name of goal
+        required: false
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Type of goal
+        required: false
+        schema:
+          type: string
+      - name: sport
+        in: query
+        description: Sport of goal
+        required: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: Goals returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goals'
+        401:
+          description: Error getting goal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: Delete goal
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Name of goal
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: New goal deleted
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error deleting goal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /activities:
+    post:
+      description: New activity
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activity'
+      responses:
+        200:
+          description: New activity saved
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error saving activity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      description: Get activities
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Name of activity
+        required: false
+        schema:
+          type: string
+      - name: sport
+        in: query
+        description: Sport of activity
+        required: false
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: type of activity
+        required: false
+        schema:
+          type: string
+      - name: minDuration
+        in: query
+        description: minDuration of activity, minutes
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: maxDuration
+        in: query
+        description: maxDuration of activity, minutes
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: minDistance
+        in: query
+        description: minDistance of activity, miles
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: maxDistance
+        in: query
+        description: maxDistance of activity, miles
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: minDate
+        in: query
+        description: minDate of activity, (yyyy-mm-dd)
+        required: false
+        schema:
+          type: string
+      - name: maxDate
+        in: query
+        description: maxDate of activity, (yyyy-mm-dd)
+        required: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: Activities returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activities'
+        401:
+          description: Error getting activities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: Delete activity
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Name of activity
+        schema:
+          type: string
+      responses:
+        200:
+          description: New activity deleted
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error deleting activity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /activitiesStrava:
+    post:
+      description: New strava activity
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activity'
+      responses:
+        200:
+          description: New activity saved
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error saving activity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /plannedActivities:
+    post:
+      description: New planned activity
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activity'
+      responses:
+        200:
+          description: New planned activity saved
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error saving planned activity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      description: Get planned activities
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Name of planned activity
+        required: false
+        schema:
+          type: string
+      - name: sport
+        in: query
+        description: Sport of planned activity
+        required: false
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: type of planned activity
+        required: false
+        schema:
+          type: string
+      - name: minDuration
+        in: query
+        description: minDuration of planned activity, minutes
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: maxDuration
+        in: query
+        description: maxDuration of planned activity, minutes
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: minDistance
+        in: query
+        description: minDistance of planned activity, miles
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: maxDistance
+        in: query
+        description: maxDistance of planned activity, miles
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: minDate
+        in: query
+        description: minDate of planned activity, (yyyy-mm-dd)
+        required: false
+        schema:
+          type: string
+      - name: maxDate
+        in: query
+        description: maxDate of planned activity, (yyyy-mm-dd)
+        required: false
+        schema:
+          type: string
+      responses:
+        200:
+          description:  Planned activities returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activities'
+        401:
+          description: Error getting planned  activities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: Delete planned activity
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Name of planned activity
+        schema:
+          type: string
+      responses:
+        200:
+          description: Planned activity deleted
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error deleting planned activity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /graphs:
+    post:
+      description: New graph
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Graph'
+      responses:
+        200:
+          description: New graph saved with returned activities involved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activities'
+        401:
+          description: Error saving graph
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /preferences:
+    post:
+      description: Update preferences
+      requestBody:
+        description: Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Preferences'
+      responses:
+        200:
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                type: string
+        401:
+          description: Error updating preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      description: Get user's preferences
+      parameters:
+      - name: username
+        in: query
+        description: User
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Preferences returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preferences'
+        401:
+          description: Error getting preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+ 
+components:
+  schemas:
+    Error:
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    Credentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        accessToken:
+          type: string
+          nullable: true
+        stravaToken:
+          type: string
+          nullable: true
+        favorites:
+          type: array
+          items: 
+            type: string
+      required:
+        - username
+    
+    Favorites:
+      type: array
+      items: 
+        type: string
+
+    Goals:
+      type: array
+      items:
+        $ref: '#/components/schemas/Goal'
+    Goal:
+      type: object
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          nullable: true
+        sport:
+          type: string
+          nullable: true
+        distance:
+          type: number
+          multipleOf: 0.01
+          nullable: true
+        time:
+          type: integer
+          format: int32
+          nullable: true
+      required:
+        - username
+        - name
+
+    Activities:
+      type: array
+      items:
+        $ref: '#/components/schemas/Activity'
+    Activity:
+      type: object
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          nullable: true
+        sport:
+          type: string
+          nullable: true
+        start_date_local:
+          type: string
+          nullable: true
+        distance:
+          type: number
+          format: double
+          nullable: true
+        moving_time:
+          type: integer
+          format: int32
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        json:
+          type: object
+          nullable: true
+      required:
+        - username
+        - name
+
+    Graph:
+      type: object
+      properties:
+        username:
+          type: string
+        duration:
+          type: string
+        graphType:
+          type: string
+        sport:
+          type: string
+          nullable: true
+        goal:
+          type: string
+        startDate:
+          type: string
+          nullable: true
+        outFile:
+          type: string
+          nullable: true
+      required:
+        - username
+        - duration
+        - graphType
+    
+    Preferences:
+      type: object
+      properties:
+        username:
+          type: string
+        isMetric:
+          type: boolean
+          nullable: true
+        colorTheme:
+          type: string
+          nullable: true
+          enum:
+            - blue
+            - purple
+            - green
+            - orange
+            - red
+        brightnessMode:
+          type: string
+          nullable: true
+          enum:
+            - light
+            - dark
+        activityMapColor:
+          type: string
+          nullable: true
+          enum:
+            - red
+            - orange
+            - green
+            - blue
+            - purple
+            - black
+            - brown
+            - magenta
+        activityMapMarkers:
+          type: boolean
+          nullable: true
+      required:
+        - username
+  
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
